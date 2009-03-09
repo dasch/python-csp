@@ -27,4 +27,4 @@ def printer(cin, cout):
     poison(cout)
 
 
-parallel(source() >> combine(sink("A"), sink("B")) >> printer())
+parallel(source() >> (sink("A") + sink("B")) >> printer())

@@ -36,6 +36,9 @@ class Process:
         """Pipe cout to another process' cin."""
         return pipe(self, other)
 
+    def __add__(self, other):
+        return combine(self, other)
+
 
 class Channel:
 
