@@ -21,7 +21,12 @@ class Process:
         self._cout = kwargs.pop("cout", Channel())
 
         def runner():
-            func(self._cin, self._cout, *args, **kwargs)
+            try:
+                func(self._cin, self._cout, *args, **kwargs)
+            except ChannelPoisoned:
+                pass
+            finally:
+                poison(self._cout)
 
         self._thread = Thread(target=runner)
 
@@ -143,7 +148,6 @@ def copy(cin, cout):
     """
     for message in cin:
         cout << message
-    poison(cout)
 
 
 def map(func):
@@ -151,7 +155,6 @@ def map(func):
     def _map(cin, cout):
         for message in cin:
             cout << func(message)
-        poison(cout)
 
     return _map()
 
@@ -161,7 +164,6 @@ def filter(predicate=None):
     def _filter(cin, cout):
         for message in ifilter(predicate, cin):
             cout << message
-        poison(cout)
 
     return _filter()
 
@@ -180,7 +182,6 @@ def combine(cin, cout, *processes):
             yield p
 
     parallel(*_copiers())
-    poison(cout)
 
 
 def pipe(p1, p2):
