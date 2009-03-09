@@ -1,10 +1,14 @@
 
+from time import sleep
+
 from csp import *
 
 
 @process
 def source(cin, cout):
-    cout << "foo" << "bar" << "baz"
+    for message in ["foo", "bar", "baz"]:
+        cout << message << "butt"
+        sleep(1)
     poison(cout)
 
 
@@ -13,6 +17,5 @@ def sink(cin, cout):
     for message in cin:
         print message
     poison(cout)
-
 
 parallel(source() >> map(str.upper) >> sink())

@@ -14,6 +14,7 @@ class Process:
         self._func = func
         self._args = args
         self._kwargs = kwargs
+        self._running = False
 
         self._cin = kwargs.pop("cin", Channel())
         self._cout = kwargs.pop("cout", Channel())
@@ -24,7 +25,9 @@ class Process:
         self._thread = Thread(target=runner)
 
     def _start(self):
-        self._thread.start()
+        if not self._running:
+            self._running = True
+            self._thread.start()
 
     def _join(self):
         self._thread.join()
@@ -148,10 +151,9 @@ def map(func):
 def pipe(p1, p2):
     @process
     def _pipe(cin, cout):
-        p1._cin = cin
-        parallel(p1, p2,
-                 copy(cin=p1._cout, cout=p2._cin),
-                 copy(cin=p2._cout, cout=cout))
+        parallel(copy(cin=p1._cout, cout=p2._cin),
+                 copy(cin=p2._cout, cout=cout),
+                 p1, p2)
 
     return _pipe()
 
