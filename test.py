@@ -19,7 +19,7 @@ def upcase(cin, cout):
 def sink(cin, cout):
     for message in cin:
         print message
+    poison(cout)
 
 
-p = pipeline(source(), upcase(), sink())
-parallel(p())
+parallel(source() >> upcase() >> sink())

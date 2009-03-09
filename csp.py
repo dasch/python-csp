@@ -29,6 +29,9 @@ class Process:
     def _join(self):
         self._thread.join()
 
+    def __rshift__(self, other):
+        return pipe(self, other)
+
 
 class Channel:
 
@@ -125,18 +128,22 @@ def sequential(*processes):
         sync(p)
 
 
+@process
+def copy(cin, cout):
+    for message in cin:
+        cout << message
+    poison(cout)
+
+
 def pipe(p1, p2):
     @process
     def _pipe(cin, cout):
-        @process
-        def __pipe(cin, cout):
-            for message in cin:
-                cout << message
-            poison(cout)
+        p1._cin = cin
+        parallel(p1, p2,
+                 copy(cin=p1._cout, cout=p2._cin),
+                 copy(cin=p2._cout, cout=cout))
 
-        spawn(__pipe(cin=p1._cout, cout=p2._cin))
-
-    return _pipe
+    return _pipe()
 
 
 def pipeline(*processes):
