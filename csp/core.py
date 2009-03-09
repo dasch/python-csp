@@ -155,6 +155,23 @@ def map(func):
     return _map()
 
 
+@process
+def combine(cin, cout, *processes):
+    @process
+    def forward(cin, cout):
+        for message in cin:
+            cout << message
+
+    def _copiers():
+        for p in processes:
+            yield copy(cin=cin, cout=p._cin)
+            yield forward(cin=p._cout, cout=cout)
+            yield p
+
+    parallel(*_copiers())
+    poison(cout)
+
+
 def pipe(p1, p2):
     @process
     def _pipe(cin, cout):

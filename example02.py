@@ -12,16 +12,19 @@ def source(cin, cout):
 
 @process
 def sink(cin, cout, name):
-    print "[%s] starting..." % name
+    cout << "[%s] starting..." % name
     for message in cin:
-        print "[%s] received: %s" % (name, message)
-        sleep(1)
-    print "[%s] terminating..." % name
+        cout << "[%s] received: %s" % (name, message)
+        sleep(0.5)
+    cout << "[%s] terminating..." % name
     poison(cout)
 
 
-p1 = source()
-p2 = p1 >> sink("A")
-p3 = p1 >> sink("B")
+@process
+def printer(cin, cout):
+    for message in cin:
+        print message
+    poison(cout)
 
-parallel(p1, p2, p3)
+
+parallel(source() >> combine(sink("A"), sink("B")) >> printer())
