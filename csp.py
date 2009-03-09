@@ -1,6 +1,7 @@
 
 from threading import Thread, Condition
 from functools import wraps
+from itertools import chain
 
 from utils import *
 
@@ -151,15 +152,16 @@ def pipe(p1, p2):
                 cout << message
             poison(cout)
 
-        parallel(p1, p2, __pipe(cin=p1._cout, cout=p2._cin))
+        spawn(__pipe(cin=p1._cout, cout=p2._cin))
 
     return _pipe
 
 
 def pipeline(*processes):
+    pipes = [pipe(p1, p2) for (p1, p2) in pairwise(processes)]
+
     @process
     def _pipeline(cin, cout):
-        pipes = [pipe(p1, p2) for (p1, p2) in pairwise(processes)]
-        parallel(*[p() for p in pipes])
+        parallel(*chain([p() for p in pipes], processes))
 
     return _pipeline
