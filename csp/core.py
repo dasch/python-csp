@@ -1,4 +1,5 @@
 
+from __future__ import with_statement
 from threading import Thread, Condition
 from functools import wraps
 from itertools import chain, ifilter
@@ -60,15 +61,12 @@ class Channel:
             self._cv.release()
 
     def _write(self, value):
-        try:
-            self._cv.acquire()
+        with self._cv:
             while self._value is not None:
                 if self._poisoned: raise ChannelPoisoned()
                 self._cv.wait()
             self._value = value
             self._cv.notify()
-        finally:
-            self._cv.release()
 
     def __lshift__(self, value):
         """Write a value to the channel."""
