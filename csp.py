@@ -63,6 +63,10 @@ class Channel:
         finally:
             self._cv.release()
 
+    def __lshift__(self, value):
+        self._write(value)
+        return self
+
     def _poison(self):
         self._cv.acquire()
         self._poisoned = True
