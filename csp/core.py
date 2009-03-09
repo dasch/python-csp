@@ -68,16 +68,16 @@ class Channel:
             self._value = value
             self._cond.notify()
 
-    def __lshift__(self, value):
-        """Write a value to the channel."""
-        self._write(value)
-        return self
-
     def _poison(self):
         self._cond.acquire()
         self._poisoned = True
         self._cond.notify()
         self._cond.release()
+
+    def __lshift__(self, value):
+        """Write a value to the channel."""
+        self._write(value)
+        return self
 
     def __iter__(self):
         try:
