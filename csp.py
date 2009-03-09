@@ -84,23 +84,13 @@ def process(func):
     return _process
 
 
-def current_process():
-    return Thread.current_thread()._process
-
-
 def send(message, channel=None):
-    """Send a message to cout or channel."""
-    if channel is None:
-        channel = current_process()._cout
-
+    """Send a message to a channel."""
     channel._write(message)
 
 
 def receive(channel=None):
-    """Read a message from cout or channel."""
-    if channel is None:
-        channel = current_process()._cout
-
+    """Read a message from a channel."""
     return channel._read()
 
 
@@ -133,14 +123,6 @@ def sequential(*processes):
     for p in processes:
         spawn(p)
         sync(p)
-
-
-def cin():
-    return current_process()._cin
-
-
-def cout():
-    return current_process()._cout
 
 
 def pipe(p1, p2):
