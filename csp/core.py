@@ -46,27 +46,27 @@ class Channel:
     def __init__(self):
         self._value = None
         self._poisoned = False
-        self._cv = Condition()
+        self._cond = Condition()
 
     def _read(self):
         try:
-            self._cv.acquire()
+            self._cond.acquire()
             while self._value is None:
                 if self._poisoned: raise ChannelPoisoned()
-                self._cv.wait()
+                self._cond.wait()
             return self._value
         finally:
             self._value = None
-            self._cv.notify()
-            self._cv.release()
+            self._cond.notify()
+            self._cond.release()
 
     def _write(self, value):
-        with self._cv:
+        with self._cond:
             while self._value is not None:
                 if self._poisoned: raise ChannelPoisoned()
-                self._cv.wait()
+                self._cond.wait()
             self._value = value
-            self._cv.notify()
+            self._cond.notify()
 
     def __lshift__(self, value):
         """Write a value to the channel."""
@@ -74,10 +74,10 @@ class Channel:
         return self
 
     def _poison(self):
-        self._cv.acquire()
+        self._cond.acquire()
         self._poisoned = True
-        self._cv.notify()
-        self._cv.release()
+        self._cond.notify()
+        self._cond.release()
 
     def __iter__(self):
         try:
