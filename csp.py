@@ -135,6 +135,16 @@ def copy(cin, cout):
     poison(cout)
 
 
+def map(func):
+    @process
+    def _map(cin, cout):
+        for message in cin:
+            cout << func(message)
+        poison(cout)
+
+    return _map()
+
+
 def pipe(p1, p2):
     @process
     def _pipe(cin, cout):
