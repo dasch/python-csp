@@ -19,4 +19,4 @@ def sink(cin, cout):
     poison(cout)
 
 
-parallel(source() >> map(str.upper) >> sink())
+parallel(source() >> filter(lambda m: m != "butt") >> map(str.upper) >> sink())

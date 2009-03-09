@@ -1,7 +1,7 @@
 
 from threading import Thread, Condition
 from functools import wraps
-from itertools import chain
+from itertools import chain, ifilter
 
 from utils import *
 
@@ -156,6 +156,16 @@ def map(func):
         poison(cout)
 
     return _map()
+
+
+def filter(predicate=None):
+    @process
+    def _filter(cin, cout):
+        for message in ifilter(predicate, cin):
+            cout << message
+        poison(cout)
+
+    return _filter()
 
 
 @process
