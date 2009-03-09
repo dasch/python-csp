@@ -8,7 +8,7 @@ from csp import *
 def source(cin, cout):
     for message in ["foo", "bar", "baz"]:
         cout << message << "butt"
-        sleep(1)
+        sleep(0.5)
     poison(cout)
 
 
@@ -17,5 +17,6 @@ def sink(cin, cout):
     for message in cin:
         print message
     poison(cout)
+
 
 parallel(source() >> map(str.upper) >> sink())
