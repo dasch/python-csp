@@ -33,6 +33,7 @@ class Process:
         self._thread.join()
 
     def __rshift__(self, other):
+        """Pipe cout to another process' cin."""
         return pipe(self, other)
 
 
@@ -67,6 +68,7 @@ class Channel:
             self._cv.release()
 
     def __lshift__(self, value):
+        """Write a value to the channel."""
         self._write(value)
         return self
 
@@ -84,6 +86,7 @@ class Channel:
 
 
 def process(func):
+    """Turn a function into a process definition."""
     @wraps(func)
     def _process(*args, **kwargs):
         return Process(func, *args, **kwargs)
@@ -133,6 +136,10 @@ def sequential(*processes):
 
 @process
 def copy(cin, cout):
+    """Copy all messages sent to cin to cout.
+
+    When cin is poisoned, the poison is transferred to cout.
+    """
     for message in cin:
         cout << message
     poison(cout)
