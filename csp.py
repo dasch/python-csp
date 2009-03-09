@@ -3,6 +3,9 @@ from threading import Thread, Condition
 from functools import wraps
 
 
+class ChannelPoisoned(Exception): pass
+
+
 class Process:
     def __init__(self, func, *args, **kwargs):
         self._func = func
@@ -67,8 +70,10 @@ class Channel:
         self._cv.release()
 
     def __iter__(self):
-        while True:
-            yield self._read()
+        try:
+            while True: yield self._read()
+        except ChannelPoisoned:
+            pass
 
 
 def process(func):
@@ -96,6 +101,11 @@ def receive(channel=None):
         channel = current_process()._cout
 
     return channel._read()
+
+
+def poison(channel):
+    """Poison a channel."""
+    channel._poison()
 
 
 def spawn(p):
