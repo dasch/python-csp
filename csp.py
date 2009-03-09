@@ -2,6 +2,8 @@
 from threading import Thread, Condition
 from functools import wraps
 
+from utils import *
+
 
 class ChannelPoisoned(Exception): pass
 
@@ -12,17 +14,11 @@ class Process:
         self._args = args
         self._kwargs = kwargs
 
-        if "cin" not in kwargs:
-            kwargs["cin"] = Channel()
-
-        if "cout" not in kwargs:
-            kwargs["cout"] = Channel()
-
-        self._cin = kwargs["cin"]
-        self._cout = kwargs["cout"]
+        self._cin = kwargs.pop("cin", Channel())
+        self._cout = kwargs.pop("cout", Channel())
 
         def runner():
-            func(*args, **kwargs)
+            func(self._cin, self._cout, *args, **kwargs)
 
         self._thread = Thread(target=runner)
 
@@ -149,24 +145,21 @@ def cout():
 def pipe(p1, p2):
     @process
     def _pipe(cin, cout):
-        cin = p1._cout
-        cout = p2._cin
-        for message in cin:
-            send(message, cout)
+        @process
+        def __pipe(cin, cout):
+            for message in cin:
+                cout << message
+            poison(cout)
+
+        parallel(p1, p2, __pipe(cin=p1._cout, cout=p2._cin))
+
     return _pipe
 
 
 def pipeline(*processes):
-    i = iter(processes)
-    p1 = i.next
-    ps = []
-
-    for p2 in i:
-        ps.append(pipe(p1, p2))
-        p1 = p2
-
     @process
     def _pipeline(cin, cout):
-        parallel(*[p() for p in ps])
+        pipes = [pipe(p1, p2) for (p1, p2) in pairwise(processes)]
+        parallel(*[p() for p in pipes])
 
     return _pipeline
