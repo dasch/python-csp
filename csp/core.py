@@ -4,8 +4,6 @@ from threading import Thread, Condition
 from functools import wraps
 from itertools import chain, ifilter
 
-from utils import *
-
 
 class ChannelPoisoned(Exception): pass
 
@@ -94,12 +92,12 @@ def process(func):
     return _process
 
 
-def send(message, channel=None):
+def send(message, channel):
     """Send a message to a channel."""
     channel._write(message)
 
 
-def receive(channel=None):
+def receive(channel):
     """Read a message from a channel."""
     return channel._read()
 
@@ -191,13 +189,3 @@ def pipe(p1, p2):
                  p1, p2)
 
     return _pipe()
-
-
-def pipeline(*processes):
-    pipes = [pipe(p1, p2) for (p1, p2) in pairwise(processes)]
-
-    @process
-    def _pipeline(cin, cout):
-        parallel(*chain([p() for p in pipes], processes))
-
-    return _pipeline
