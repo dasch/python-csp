@@ -66,10 +66,9 @@ class Channel:
             self._cond.notify()
 
     def _poison(self):
-        self._cond.acquire()
-        self._poisoned = True
-        self._cond.notify()
-        self._cond.release()
+        with self._cond:
+            self._poisoned = True
+            self._cond.notify()
 
     def __lshift__(self, value):
         """Write a value to the channel."""
