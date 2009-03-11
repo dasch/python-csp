@@ -108,6 +108,7 @@ def poison(channel):
 def spawn(p):
     """Start process p."""
     p._start()
+    return p
 
 
 def sync(p):
