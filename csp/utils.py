@@ -22,3 +22,13 @@ def filter(predicate=None):
         poison(cout)
 
     return _filter()
+
+
+def iterator(seq):
+    @process
+    def _iterator(cin, cout):
+        for value in seq:
+            cout << value
+        poison(cout)
+
+    return _iterator
