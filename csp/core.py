@@ -4,7 +4,7 @@ from threading import Thread, Condition
 from functools import wraps
 
 
-_VOID = object()
+_NULL = object()
 
 class ChannelPoisoned(Exception): pass
 
@@ -43,25 +43,25 @@ class Process:
 class Channel:
 
     def __init__(self):
-        self._value = _VOID
+        self._value = _NULL
         self._poisoned = False
         self._cond = Condition()
 
     def _read(self):
         try:
             self._cond.acquire()
-            while self._value is _VOID:
+            while self._value is _NULL:
                 if self._poisoned: raise ChannelPoisoned()
                 self._cond.wait()
             return self._value
         finally:
-            self._value = _VOID
+            self._value = _NULL
             self._cond.notify()
             self._cond.release()
 
     def _write(self, value):
         with self._cond:
-            while self._value is not _VOID:
+            while self._value is not _NULL:
                 if self._poisoned: raise ChannelPoisoned()
                 self._cond.wait()
             self._value = value
