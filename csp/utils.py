@@ -4,6 +4,14 @@ from itertools import ifilter
 from csp.core import *
 
 
+def pool(processes):
+    @process
+    def _pool(cin, cout):
+        parallel(*[p(cin=cin, cout=cout) for p in processes])
+        poison(cout)
+
+    return _pool
+
 def map(func):
     @process
     def _map(cin, cout):
