@@ -6,7 +6,7 @@ from csp import *
 
 class ChannelTest(unittest.TestCase):
 
-    def test_can_send_none(self):
+    def test_can_write_none(self):
         c = Channel()
 
         @process
@@ -15,7 +15,7 @@ class ChannelTest(unittest.TestCase):
 
         p = spawn(p1(cout=c))
 
-        self.assertEqual(None, receive(c))
+        self.assertEqual(None, read(c))
 
 
 class UtilsTest(unittest.TestCase):
@@ -26,9 +26,9 @@ class UtilsTest(unittest.TestCase):
 
         p = spawn(it(cout=c))
 
-        self.assertEqual(1, receive(c))
-        self.assertEqual(2, receive(c))
-        self.assertEqual(3, receive(c))
+        self.assertEqual(1, read(c))
+        self.assertEqual(2, read(c))
+        self.assertEqual(3, read(c))
 
         sync(p)
 

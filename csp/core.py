@@ -93,12 +93,12 @@ def process(func):
     return _process
 
 
-def send(message, channel):
+def write(message, channel):
     """Send a message to a channel."""
     channel._write(message)
 
 
-def receive(channel):
+def read(channel):
     """Read a message from a channel."""
     return channel._read()
 
