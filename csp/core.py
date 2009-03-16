@@ -4,8 +4,7 @@ from threading import Thread, Condition
 from functools import wraps
 
 
-class _Void: pass
-_VOID = _Void()
+_VOID = object()
 
 class ChannelPoisoned(Exception): pass
 
