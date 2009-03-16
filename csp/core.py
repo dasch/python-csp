@@ -1,7 +1,7 @@
 
 from __future__ import with_statement
-from threading import Thread, Condition
-from functools import wraps
+import threading
+import functools
 
 
 _NULL = object()
@@ -22,7 +22,7 @@ class Process:
         def runner():
             func(self._cin, self._cout, *args, **kwargs)
 
-        self._thread = Thread(target=runner)
+        self._thread = threading.Thread(target=runner)
 
     def _start(self):
         if not self._running:
@@ -45,7 +45,7 @@ class Channel:
     def __init__(self):
         self._value = _NULL
         self._poisoned = False
-        self._cond = Condition()
+        self._cond = threading.Condition()
 
     def _read(self):
         try:
@@ -86,7 +86,7 @@ class Channel:
 
 def process(func):
     """Turn a function into a process definition."""
-    @wraps(func)
+    @functools.wraps(func)
     def _process(*args, **kwargs):
         return Process(func, *args, **kwargs)
     return _process
