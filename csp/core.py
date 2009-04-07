@@ -142,6 +142,7 @@ class Choice:
         with self._cond:
             if self._value is _NULL:
                 self._value = value
+                self._cond.notify()
 
     def __or__(self, other):
         self._guards.append(other)

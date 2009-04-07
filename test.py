@@ -85,6 +85,16 @@ class ChoiceTest(unittest.TestCase):
 
         sync(p1, p2, p3)
 
+    def test_notification(self):
+        c1 = Channel()
+        c2 = Channel()
+
+        @process
+        def reader(cin, cout):
+            self.assertEqual(42, select(c1 | c2))
+
+        parallel(reader(), iterate([42], cout=c1), iterate([42], cout=c2))
+
 
 if __name__ == "__main__":
     unittest.main()
