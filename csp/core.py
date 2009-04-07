@@ -109,7 +109,7 @@ class Channel:
 class Choice:
 
     def __init__(self, *guards):
-        self._guards = guards
+        self._guards = list(guards)
         self._cond = threading.Condition()
         self._value = _NULL
 
