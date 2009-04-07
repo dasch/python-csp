@@ -63,5 +63,22 @@ class ChoiceTest(unittest.TestCase):
             self.assert_(True)
 
 
+    def test_iteration(self):
+        c1 = Channel()
+        c2 = Channel()
+        c3 = Channel()
+
+        p1 = spawn(iterate([0], cout=c1))
+        p2 = spawn(iterate([1], cout=c2))
+        p3 = spawn(iterate([2], cout=c3))
+
+        for (v, i) in enumerate(c1 | c2 | c3):
+            self.assertEqual(i, v)
+
+        sync(p1)
+        sync(p2)
+        sync(p3)
+
+
 if __name__ == "__main__":
     unittest.main()

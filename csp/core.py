@@ -146,6 +146,13 @@ class Choice:
         self._guards.append(other)
         return self
 
+    def __iter__(self):
+        try:
+            while True:
+                yield self._select()
+        except ChannelPoisoned:
+            pass
+
 
 
 
