@@ -187,14 +187,15 @@ def poison(channel):
 
 
 def spawn(p):
-    """Start process p."""
+    """Start processes."""
     p._start()
     return p
 
 
-def sync(p):
-    """Wait for process p to finish."""
-    p._join()
+def sync(*processes):
+    """Wait for processes to finish."""
+    for p in processes:
+        p._join()
 
 
 def parallel(*processes):
