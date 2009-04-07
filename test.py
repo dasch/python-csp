@@ -92,6 +92,7 @@ class ChoiceTest(unittest.TestCase):
         @process
         def reader(cin, cout):
             self.assertEqual(42, select(c1 | c2))
+            self.assertEqual(42, select(c1 | c2))
 
         parallel(reader(), iterate([42], cout=c1), iterate([42], cout=c2))
 
