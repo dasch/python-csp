@@ -14,8 +14,15 @@ c2 = Channel()
 p1 = spawn(writer(42, cout=c1))
 p2 = spawn(writer(19, cout=c2))
 
+print select(c1 | c2)
+print select(c1 | c2)
+
 sync(p1)
 sync(p2)
 
-print select(c1 | c2)
-print select(c1 | c2)
+try:
+    select(c1 | c2)
+except ChannelPoisoned:
+    print "terminated"
+else:
+    print "expected to be poisoned"

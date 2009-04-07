@@ -66,6 +66,8 @@ class Channel:
                 value = self._value
                 self._value = _NULL
                 return value
+            elif self._poisoned:
+                raise ChannelPoisoned()
             else:
                 self._listeners.append(choice)
                 return _NULL
@@ -113,11 +115,19 @@ class Choice:
 
     def _select(self):
         with self._cond:
-            for guard in self._guards:
-                value = guard._select(self)
+            num_poisoned = 0
 
-                if value is not _NULL:
-                    return value
+            for guard in self._guards:
+                try:
+                    value = guard._select(self)
+
+                    if value is not _NULL:
+                        return value
+                except ChannelPoisoned:
+                    num_poisoned += 1
+
+            if num_poisoned == len(self._guards):
+                raise ChannelPoisoned()
 
             while self._value is _NULL:
                 self._cond.wait()
