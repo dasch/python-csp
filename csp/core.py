@@ -111,9 +111,10 @@ class Choice:
     def __init__(self, *guards):
         self._guards = list(guards)
         self._cond = threading.Condition()
-        self._value = _NULL
 
     def _select(self):
+        self._value = _NULL
+
         with self._cond:
             num_poisoned = 0
 
