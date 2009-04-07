@@ -32,11 +32,8 @@ def filter(predicate=None):
     return _filter()
 
 
-def iterator(seq):
-    @process
-    def _iterator(cin, cout):
-        for value in seq:
-            cout << value
-        poison(cout)
-
-    return _iterator
+@process
+def iterate(cin, cout, seq):
+    for value in seq:
+        cout << value
+    poison(cout)
