@@ -45,6 +45,7 @@ class Channel:
     def __init__(self):
         self._value = _NULL
         self._poisoned = False
+        self._listeners = []
         self._cond = threading.Condition()
 
     def _read(self):
@@ -59,11 +60,27 @@ class Channel:
             self._cond.notify()
             self._cond.release()
 
+    def _select(self, choice):
+        with self._cond:
+            if self._value is not _NULL:
+                value = self._value
+                self._value = _NULL
+                return value
+            else:
+                self._listeners.append(choice)
+                return _NULL
+
     def _write(self, value):
         with self._cond:
             while self._value is not _NULL:
                 if self._poisoned: raise ChannelPoisoned()
                 self._cond.wait()
+
+            if self._listeners:
+                listener = self._listeners.pop()
+                if listener._put(value):
+                    return
+
             self._value = value
             self._cond.notify()
 
@@ -83,6 +100,44 @@ class Channel:
         except ChannelPoisoned:
             pass
 
+    def __or__(self, other):
+        return Choice(self, other)
+
+
+class Choice:
+
+    def __init__(self, *guards):
+        self._guards = guards
+        self._cond = threading.Condition()
+        self._value = _NULL
+
+    def _select(self):
+        with self._cond:
+            for guard in self._guards:
+                value = guard._select(self)
+
+                if value is not _NULL:
+                    return value
+
+            while self._value is _NULL:
+                self._cond.wait()
+
+            value = self._value
+            self._value = _NULL
+
+            return value
+
+    def _put(self, value):
+        with self._cond:
+            if self._value is _NULL:
+                self._value = value
+
+    def __or__(self, other):
+        self.guards.append(other)
+        return self
+
+
+
 
 def process(func):
     """Turn a function into a process definition."""
@@ -101,6 +156,12 @@ def read(channel):
     """Read a message from a channel."""
     return channel._read()
 
+
+def select(choice):
+    """Read a message from a choice of sources.
+    
+    The sources include channels, skips, and timeouts."""
+    return choice._select()
 
 def poison(channel):
     """Poison a channel."""
