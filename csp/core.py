@@ -143,7 +143,7 @@ class Choice:
                 self._value = value
 
     def __or__(self, other):
-        self.guards.append(other)
+        self._guards.append(other)
         return self
 
 
