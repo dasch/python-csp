@@ -17,6 +17,8 @@ class ChannelTest(unittest.TestCase):
 
         self.assertEqual(None, read(c))
 
+        sync(p)
+
 
 class UtilsTest(unittest.TestCase):
 
@@ -28,6 +30,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(1, read(c))
         self.assertEqual(2, read(c))
         self.assertEqual(3, read(c))
+
+        sync(it)
 
 
 class ChoiceTest(unittest.TestCase):
@@ -46,6 +50,8 @@ class ChoiceTest(unittest.TestCase):
 
         self.assertEqual(42, select(choice))
 
+        sync(p)
+
     def test_multiple_choice(self):
         c1 = Channel()
         c2 = Channel()
@@ -62,6 +68,8 @@ class ChoiceTest(unittest.TestCase):
         except ChannelPoisoned:
             self.assert_(True)
 
+        sync(p1, p2)
+
 
     def test_iteration(self):
         c1 = Channel()
@@ -75,9 +83,7 @@ class ChoiceTest(unittest.TestCase):
         for (v, i) in enumerate(c1 | c2 | c3):
             self.assertEqual(i, v)
 
-        sync(p1)
-        sync(p2)
-        sync(p3)
+        sync(p1, p2, p3)
 
 
 if __name__ == "__main__":
