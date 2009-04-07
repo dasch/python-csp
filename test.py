@@ -33,5 +33,44 @@ class UtilsTest(unittest.TestCase):
         sync(p)
 
 
+class ChoiceTest(unittest.TestCase):
+
+    def test_single_choice(self):
+        c = Channel()
+
+        @process
+        def writer(cin, cout):
+            cout << 42
+            poison(cout)
+
+        p = spawn(writer(cout=c))
+
+        choice = Choice(c)
+
+        self.assertEqual(42, select(choice))
+
+    def test_multiple_choice(self):
+        c1 = Channel()
+        c2 = Channel()
+
+        @process
+        def writer(cin, cout, seq):
+            for value in seq:
+                cout << value
+            poison(cout)
+
+        p1 = spawn(writer([42], cout=c1))
+        p2 = spawn(writer([42], cout=c2))
+
+        self.assertEqual(42, select(c1 | c2))
+        self.assertEqual(42, select(c1 | c2))
+
+        try:
+            select(c1 | c2)
+            self.fail("Should not allow selecting from poisoned choice")
+        except ChannelPoisoned:
+            self.assert_(True)
+
+
 if __name__ == "__main__":
     unittest.main()
