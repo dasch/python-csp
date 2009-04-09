@@ -2,6 +2,7 @@
 from __future__ import with_statement
 import threading
 import functools
+import inspect
 
 
 _NULL = object()
@@ -16,11 +17,19 @@ class Process:
         self._kwargs = kwargs
         self._running = False
 
-        self._cin = kwargs.pop("cin", Channel())
-        self._cout = kwargs.pop("cout", Channel())
+        (fn_args, _, _, _) = inspect.getargspec(func)
+
+        if "cin" in fn_args and "cin" not in kwargs:
+            kwargs["cin"] = Channel()
+
+        if "cout" in fn_args and "cout" not in kwargs:
+            kwargs["cout"] = Channel()
+
+        self._cin = kwargs.get("cin", None)
+        self._cout = kwargs.get("cout", None)
 
         def runner():
-            func(self._cin, self._cout, *args, **kwargs)
+            func(*args, **kwargs)
 
         self._thread = threading.Thread(target=runner)
 

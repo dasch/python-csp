@@ -51,7 +51,7 @@ def filter(predicate=None):
 
 
 @process
-def iterate(cin, cout, seq):
+def iterate(seq, cout):
     for value in seq:
         cout << value
     poison(cout)
