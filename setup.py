@@ -1,5 +1,6 @@
 
-from distutils.core import setup
+#from distutils.core import setup
+from setuptools import setup
 
 import csp
 
@@ -14,4 +15,5 @@ setup(name=NAME,
       description=DESCRIPTION,
       version=VERSION,
       author=AUTHOR,
-      packages=["csp"])
+      packages=["csp"],
+      test_suite="csp.tests")
