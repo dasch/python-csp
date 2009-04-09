@@ -4,6 +4,16 @@ from testcase import *
 
 class ChannelTest(TestCase):
 
+    def test_can_transmit_message(self):
+        c = Channel()
+
+        @process
+        def p(cin, cout):
+            cout << 42
+
+        with spawned(p(cout=c)):
+            self.assertEqual(42, read(c))
+
     def test_can_write_none(self):
         c = Channel()
 

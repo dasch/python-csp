@@ -1,7 +1,20 @@
 
 from itertools import ifilter
+from contextlib import contextmanager
 
 from csp.core import *
+
+
+@contextmanager
+def spawned(process):
+    """Run a block concurrently with the specified processes.
+    
+    The processes will be spawned before entering the block and synchronized
+    afterwards.
+    """
+    spawn(process)
+    yield
+    sync(process)
 
 
 def pool(processes):
