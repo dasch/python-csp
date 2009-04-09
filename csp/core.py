@@ -12,9 +12,6 @@ class ChannelPoisoned(Exception): pass
 
 class Process:
     def __init__(self, func, *args, **kwargs):
-        self._func = func
-        self._args = args
-        self._kwargs = kwargs
         self._running = False
 
         (fn_args, _, _, _) = inspect.getargspec(func)
