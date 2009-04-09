@@ -23,6 +23,7 @@ def spawned(*processes):
 
 @process
 def iterate(seq, cout):
+    """Write each value in seq to cout."""
     for value in seq:
         cout << value
     poison(cout)
