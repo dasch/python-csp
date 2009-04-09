@@ -1,9 +1,8 @@
 
-import unittest
-from .. import *
+from testcase import *
 
 
-class ChoiceTest(unittest.TestCase):
+class ChoiceTest(TestCase):
 
     def test_single_choice(self):
         c = Channel()

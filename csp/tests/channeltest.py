@@ -1,9 +1,8 @@
 
-import unittest
-from .. import *
+from testcase import *
 
 
-class ChannelTest(unittest.TestCase):
+class ChannelTest(TestCase):
 
     def test_can_write_none(self):
         c = Channel()

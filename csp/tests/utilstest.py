@@ -1,9 +1,8 @@
 
-import unittest
-from .. import *
+from testcase import *
 
 
-class UtilsTest(unittest.TestCase):
+class UtilsTest(TestCase):
 
     def test_iterate(self):
         c = Channel()
