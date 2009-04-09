@@ -6,15 +6,20 @@ from csp.core import *
 
 
 @contextmanager
-def spawned(process):
+def spawned(*processes):
     """Run a block concurrently with the specified processes.
     
     The processes will be spawned before entering the block and synchronized
     afterwards.
     """
-    spawn(process)
+    for process in processes:
+        spawn(process)
+
+    # Run the block.
     yield
-    sync(process)
+
+    for process in processes:
+        sync(process)
 
 
 def pool(processes):
