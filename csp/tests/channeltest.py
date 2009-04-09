@@ -21,8 +21,5 @@ class ChannelTest(TestCase):
         def p1(cin, cout):
             cout << None
 
-        p = spawn(p1(cout=c))
-
-        self.assertEqual(None, read(c))
-
-        sync(p)
+        with spawned(p1(cout=c)):
+            self.assertEqual(None, read(c))
