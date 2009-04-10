@@ -11,6 +11,19 @@ class ChannelPoisoned(Exception): pass
 
 
 class Process:
+    """A sequential thread of control.
+    
+    Processes act independently and concurrently, and only synchronize
+    with each other through communication.
+
+    The <code>csp.process</code> decorator can be used to mark a
+    function to be run concurrently as a process.
+
+    >>> @csp.process
+    >>> def worker(workload, cout):
+    >>>     result = process_work(workload)
+    >>>     cout << result
+    """
     def __init__(self, func, *args, **kwargs):
         self._running = False
 
