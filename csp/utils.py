@@ -1,7 +1,7 @@
 
 from contextlib import contextmanager
 
-from csp.core import *
+from csp import *
 
 
 @contextmanager
