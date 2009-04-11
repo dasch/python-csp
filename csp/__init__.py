@@ -1,5 +1,5 @@
 
-from core import *
+from _core import *
 from utils import *
 
 __author__ = "Daniel Schierbeck"
