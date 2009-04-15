@@ -7,12 +7,7 @@ class ChoiceTest(TestCase):
     def test_single_choice(self):
         c = Channel()
 
-        @process
-        def writer(cin, cout):
-            cout << 42
-            poison(cout)
-
-        with spawned(writer(cout=c)):
+        with spawned(iterate([42], cout=c)):
             choice = Choice(c)
             self.assertEqual(42, select(choice))
 
@@ -57,15 +52,7 @@ class ChoiceTest(TestCase):
         c1 = Channel()
         c2 = Channel()
 
-        @process
-        def p1(cout):
-            cout << 1
-
-        @process
-        def p2(cout):
-            cout << 1 << 1
-
-        with spawned(p1(cout=c1), p2(cout=c2)):
+        with spawned(iterate([1], cout=c1), iterate([1, 1], cout=c2)):
             self.assertEqual(1, select(c1 | c2))
             self.assertEqual(1, select(c1 | c2))
             self.assertEqual(1, select(c1 | c2))
