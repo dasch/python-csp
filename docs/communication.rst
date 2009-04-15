@@ -1,6 +1,10 @@
 
+Communication
+=============
+
+
 Channels
-========
+--------
 
 Channels are the main means of communication between processes. They provide
 bidirectional exchange of messages.
