@@ -85,6 +85,7 @@ class Channel:
             if self._value is not _NULL:
                 value = self._value
                 self._value = _NULL
+                self._cond.notify()
                 return value
             elif self._poisoned:
                 raise ChannelPoisoned()
