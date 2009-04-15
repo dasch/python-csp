@@ -52,3 +52,20 @@ class ChoiceTest(TestCase):
             self.assertEqual(42, select(c1 | c2))
 
         parallel(reader(), iterate([42], cout=c1), iterate([42], cout=c2))
+
+    def test_does_not_discard_messages(self):
+        c1 = Channel()
+        c2 = Channel()
+
+        @process
+        def p1(cout):
+            cout << 1
+
+        @process
+        def p2(cout):
+            cout << 1 << 1
+
+        with spawned(p1(cout=c1), p2(cout=c2)):
+            self.assertEqual(1, select(c1 | c2))
+            self.assertEqual(1, select(c1 | c2))
+            self.assertEqual(1, select(c1 | c2))
