@@ -69,6 +69,10 @@ class Channel:
         self._cond = threading.Condition()
 
     def _read(self):
+        """Read a message from the channel.
+
+        Will block until a writer is ready.
+        """
         try:
             self._cond.acquire()
             while self._value is _NULL:
@@ -81,6 +85,11 @@ class Channel:
             self._cond.release()
 
     def _select(self, choice):
+        """Select a message from the channel.
+
+        Reads a message when a writer is ready, unless the choice has
+        already been completed.
+        """
         with self._cond:
             if self._value is not _NULL:
                 value = self._value
@@ -94,6 +103,10 @@ class Channel:
                 return _NULL
 
     def _write(self, value):
+        """Write a message to the channel.
+
+        Will block until a reader is ready.
+        """
         with self._cond:
             while self._value is not _NULL:
                 if self._poisoned: raise ChannelPoisoned()
@@ -108,6 +121,13 @@ class Channel:
             self._cond.notify()
 
     def _poison(self):
+        """Poison the channel.
+
+        A poisoned channel can no longer be read from or written to. Note
+        that any previous operation on the channel will complete; only
+        attempts to read or write **after** the poisoning will raise an
+        exception.
+        """
         with self._cond:
             self._poisoned = True
             self._cond.notify()
