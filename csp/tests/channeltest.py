@@ -23,3 +23,11 @@ class ChannelTest(TestCase):
 
         with spawned(p1(cout=c)):
             self.assertEqual(None, read(c))
+
+    def test_should_block_on_write(self):
+        @process
+        def writer(cout):
+            cout << 42
+            self.fail("Expected to block on writes")
+
+        p = spawn(writer())
